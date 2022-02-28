@@ -35,7 +35,7 @@ while True:
             amount_btc = item.split("Amount (BTC)")[1].split("Amount (USD)")[0]
             amount_usd = item.split("Amount (BTC)")[1].split("Amount (USD)")[1]
 
-            newJson += ',{' + f'"Hash":"{hash}","Time":"{time}","Amount (BTC)":"{amount_btc}","Amount (USD)":"{amount_usd}"' + '}'
+            newJson += ',{' + f'"{hash}":'+'{'+f'"Time":"{time}","Amount (BTC)":"{amount_btc}","Amount (USD)":"{amount_usd}"' + '}}'
 
     ## wegschrijven naar file
     if oldJson == "":
