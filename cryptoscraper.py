@@ -2,6 +2,15 @@ import requests, json
 from time import sleep
 from bs4 import BeautifulSoup
 from os.path import exists
+from pymongo import MongoClient
+import urllib.parse
+
+username = urllib.parse.quote_plus('superuser')
+password = urllib.parse.quote_plus('p@ss')
+
+client = MongoClient("mongodb://%s:%s@127.0.0.1:27017" % (username,password))
+db = client.cryptoscraper
+collection = db.transaction
 
 while True:
 
@@ -10,21 +19,10 @@ while True:
 
     response = requests.request("GET", url)
     soup = BeautifulSoup(response.text,features="html5lib")
-    
-    ## bestaat json-file al?
-    if exists("scrapings.json"):
-        f = open("scrapings.json",'r')
-        oldJson = f.read()
-        f.close()
-    else:
-        f = open("scrapings.json",'w')
-        oldJson = ""
-        f.close()
 
     ## data selecteren
     if soup.find("div", class_="sc-1g6z4xm-0 hXyplo") != None:
         list = soup.findAll("div", class_="sc-1g6z4xm-0 hXyplo")
-        newJson = ""
 
         ## data formateren
         for item in list:
@@ -35,16 +33,10 @@ while True:
             amount_btc = item.split("Amount (BTC)")[1].split("Amount (USD)")[0]
             amount_usd = item.split("Amount (BTC)")[1].split("Amount (USD)")[1]
 
-            newJson += ',{' + f'"{hash}":'+'{'+f'"Time":"{time}","Amount (BTC)":"{amount_btc}","Amount (USD)":"{amount_usd}"' + '}}'
+            ## wegschrijven naar DB
+            newData = {hash:{"Time":time,"Amount (BTC)":amount_btc,"Amount (USD)":amount_usd}}
+            collection.insert_one(newData)
 
-    ## wegschrijven naar file
-    if oldJson == "":
-        newJson = newJson.replace(",{","{",1)
-
-    f = open("scrapings.json",'w')
-    writeText = "[" + oldJson.replace('[','').replace(']','') + newJson + "]"
-    f.write(writeText)
-    f.close()
 
     print("Programma uitgevoerd!")
 
