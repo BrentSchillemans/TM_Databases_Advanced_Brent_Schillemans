@@ -15,9 +15,8 @@
 <br> 
 
 ### Werking Crpytoscraper
-Eens de python-file aan het lopen is, gaat deze automatisch elke minuut de data scrapen en in een json-file genaamd "scrapings.json" bewaren.
+Eens de python-file aan het lopen is, gaat deze automatisch elke minuut de data scrapen en in de collectie "transaction" van de database "cryptoscraper" op MongoDB opslaan.
 1. Scraper gaat via request naar "https://www.blockchain.com/btc/unconfirmed-transactions" de data ophalen
-2. Even checken of json-file om data in te bewaren al bestaat of niet. Zo niet, deze aanmaken
-3. De gescrapte data filteren, enkel de transacties, bestaande uit Hash, Time, Amount (BTC) en Amount (USD), hebben we nodig. Dit kan dankzij het pakket beautifulsoup, we zoeken hierbij in de html-structuur naar de klasse "sc-1g6z4xm-0 hXyplo"
-4. De reeds gescrapte data wordt samengevoegd met de nieuwe data en gestored in de json-file
+2. De gescrapte data filteren, enkel de transacties, bestaande uit Hash, Time, Amount (BTC) en Amount (USD), hebben we nodig. Dit kan dankzij het pakket beautifulsoup, we zoeken hierbij in de html-structuur naar de klasse "sc-1g6z4xm-0 hXyplo"
+4. De gescrapte data wordt bijgevoegd in de MongoDB database
 5. Na één minuut wordt het programma opnieuw gerunned en wordt nieuwe data gescraped
