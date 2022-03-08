@@ -4,13 +4,22 @@ from bs4 import BeautifulSoup
 from os.path import exists
 from pymongo import MongoClient
 import urllib.parse
+import redis
 
+## mongoDB
 username = urllib.parse.quote_plus('superuser')
 password = urllib.parse.quote_plus('p@ss')
 
 client = MongoClient("mongodb://%s:%s@127.0.0.1:27017" % (username,password))
 db = client.cryptoscraper
 collection = db.transaction
+
+## Redis
+r = redis.Redis(
+    host = 'localhost',
+    port = 6379,
+    password = 'p@ss'
+)
 
 while True:
 
@@ -33,9 +42,15 @@ while True:
             amount_btc = item.split("Amount (BTC)")[1].split("Amount (USD)")[0]
             amount_usd = item.split("Amount (BTC)")[1].split("Amount (USD)")[1]
 
-            ## wegschrijven naar DB
-            newData = {hash:{"Time":time,"Amount (BTC)":amount_btc,"Amount (USD)":amount_usd}}
-            collection.insert_one(newData)
+            ## checken in cache
+            if r.get(hash) == None:
+                ## nieuwe transacties wegschrijven naar DB
+                newData = {hash:{"Time":time,"Amount (BTC)":amount_btc,"Amount (USD)":amount_usd}}
+                collection.insert_one(newData)
+                print(hash)
+
+            ## transacties toevoegen aan cache en bijhouden voor 65 seconden (wordt na minuut bijgevoegd, maar met marge indien scraper vertraagd is)
+            r.set(hash, time, ex=65)
 
 
     print("Programma uitgevoerd!")
