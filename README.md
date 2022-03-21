@@ -3,7 +3,7 @@
 
 <br>
 
-### Installatie VM - Ununtu
+### Installatie VM - Ubuntu
 - Stap 1: .iso-file downloaden van officiële Ubuntu website
 - Stap 2: virtuele machine opzetten via Oracle Virtual Box
 - Stap 3: Ubuntu installeren en configureren
