@@ -2,23 +2,14 @@ import requests, json
 from time import sleep
 from bs4 import BeautifulSoup
 from os.path import exists
-from pymongo import MongoClient
 import urllib.parse
 import redis
-
-## mongoDB
-username = urllib.parse.quote_plus('superuser')
-password = urllib.parse.quote_plus('p@ss')
-
-client = MongoClient("mongodb://%s:%s@127.0.0.1:27017" % (username,password))
-db = client.cryptoscraper
-collection = db.transaction
+from datetime import timedelta
 
 ## Redis
 r = redis.Redis(
-    host = 'localhost',
-    port = 6379,
-    password = 'p@ss'
+    host="localhost",
+    port=8081
 )
 
 while True:
@@ -42,16 +33,12 @@ while True:
             amount_btc = item.split("Amount (BTC)")[1].split("Amount (USD)")[0]
             amount_usd = item.split("Amount (BTC)")[1].split("Amount (USD)")[1]
 
-            ## checken in cache
-            if r.get(hash) == None:
-                ## nieuwe transacties wegschrijven naar DB
-                newData = {hash:{"Time":time,"Amount (BTC)":amount_btc,"Amount (USD)":amount_usd}}
-                collection.insert_one(newData)
-                print(hash)
+            newData = {"Hash":hash,"Time":time,"Amount (BTC)":amount_btc,"Amount (USD)":amount_usd}
+            print(hash)
 
-            ## transacties toevoegen aan cache en bijhouden voor 65 seconden (wordt na minuut bijgevoegd, maar met marge indien scraper vertraagd is)
-            r.set(hash, time, ex=65)
-
+            ## transacties toevoegen aan cache en bijhouden voor 60 seconden
+            r.hmset(hash, newData)
+            r.expire(hash, timedelta(seconds=60))
 
     print("Programma uitgevoerd!")
 
