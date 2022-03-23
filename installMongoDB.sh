@@ -22,5 +22,5 @@ db.createUser(
 )
 show users
 
-#sluiten
-exit
+#mongoDB installeren voor python
+pip install pymongo
