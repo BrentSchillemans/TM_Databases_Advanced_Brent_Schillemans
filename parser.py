@@ -7,7 +7,7 @@ import urllib.parse
 import redis
 
 ## mongoDB
-client = MongoClient("mongodb://127.0.0.1:27017")
+client = MongoClient("mongodb://127.0.0.1:8080")
 db = client.cryptoscraper
 collection = db.transaction
 
@@ -19,6 +19,7 @@ r = redis.Redis(
 
 maxHash = ""
 maxValue = 0
+maxString = {}
 
 while True:
 
@@ -38,9 +39,13 @@ while True:
             maxHash = hash
             maxValue = usdValue
 
+            maxString = {hash:{"Time":time,"Amount (BTC)":btc,"Amount (USD)":usd}}
+                
+
         print(key,"-",time,"-",btc,"-",usd)
         print()
 
+    collection.insert_one(maxString)
     print("Grootste hash:",maxHash,"met waarde $",maxValue)
     print("Programma uitgevoerd!")
 
