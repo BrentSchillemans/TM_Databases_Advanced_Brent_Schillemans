@@ -14,11 +14,11 @@ r = redis.Redis(
     port=8081
 )
 
-maxHash = ""
-maxValue = 0
-maxString = {}
-
 while True:
+
+    maxHash = ""
+    maxValue = 0
+    maxString = {}
 
     ## data ophalen uit Redis
     for key in r.keys():
@@ -37,8 +37,10 @@ while True:
             maxValue = usdValue
 
             maxString = {hash:{"Time":time,"Amount (BTC)":btc,"Amount (USD)":usd}}
-                
-    collection.insert_one(maxString)
+    
+    if collection.find_one(maxString) == None:
+        collection.insert_one(maxString)
+    
     print("Grootste hash:",maxHash,"met waarde $",maxValue)
     now = datetime.now()
     current_time = now.strftime("%H:%M")
