@@ -1,10 +1,9 @@
-import requests, json
+import requests
 from time import sleep
 from bs4 import BeautifulSoup
-from os.path import exists
-import urllib.parse
 import redis
 from datetime import timedelta
+from datetime import datetime
 
 ## Redis
 r = redis.Redis(
@@ -34,13 +33,14 @@ while True:
             amount_usd = item.split("Amount (BTC)")[1].split("Amount (USD)")[1]
 
             newData = {"Hash":hash,"Time":time,"Amount (BTC)":amount_btc,"Amount (USD)":amount_usd}
-            print(hash)
 
             ## transacties toevoegen aan cache en bijhouden voor 60 seconden
             r.hmset(hash, newData)
             r.expire(hash, timedelta(seconds=60))
 
-    print("Programma uitgevoerd!")
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Programma uitgevoerd! -",current_time)
 
     #Loop elke minuut
     sleep(60)

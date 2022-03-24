@@ -1,10 +1,7 @@
-import requests, json
 from time import sleep
-from bs4 import BeautifulSoup
-from os.path import exists
 from pymongo import MongoClient
-import urllib.parse
 import redis
+from datetime import datetime
 
 ## mongoDB
 client = MongoClient("mongodb://127.0.0.1:8080")
@@ -41,13 +38,11 @@ while True:
 
             maxString = {hash:{"Time":time,"Amount (BTC)":btc,"Amount (USD)":usd}}
                 
-
-        print(key,"-",time,"-",btc,"-",usd)
-        print()
-
     collection.insert_one(maxString)
     print("Grootste hash:",maxHash,"met waarde $",maxValue)
-    print("Programma uitgevoerd!")
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Programma uitgevoerd! -",current_time)
 
     #Loop elke minuut
     sleep(60)
