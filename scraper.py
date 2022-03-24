@@ -39,7 +39,7 @@ while True:
             r.expire(hash, timedelta(seconds=60))
 
     now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
+    current_time = now.strftime("%H:%M")
     print("Programma uitgevoerd! -",current_time)
 
     #Loop elke minuut
